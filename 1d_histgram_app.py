@@ -48,18 +48,18 @@ if uploaded_file is not None:
         scores = peak_ys * peak_proms
 
         # 上位2つ選出
-        top_xs, top_ys = [], []
+        top_xs, top_ys = np.array([]), np.array([])
         peak_info_text = ""
         if len(scores) >= 2:
             top_indices = np.argsort(scores)[-2:][::-1]
             top_xs = peak_xs[top_indices]
             top_ys = peak_ys[top_indices]
             for i in range(2):
-                peak_info_text += f"Peak {i+1}: sum_energy = {top_xs[i]:.1f}, height = {top_ys[i]:.1f}, prom = {peak_proms[top_indices[i]]:.1f}\n"
+                peak_info_text += f"📌 Peak {i+1}: sum_energy = {top_xs[i]:.1f}, height = {top_ys[i]:.1f}, prom = {peak_proms[top_indices[i]]:.1f}\n"
         elif len(scores) == 1:
-            top_xs = [peak_xs[0]]
-            top_ys = [peak_ys[0]]
-            peak_info_text += f"Only 1 peak: sum_energy = {top_xs[0]:.1f}, height = {top_ys[0]:.1f}, prom = {peak_proms[0]:.1f}\n"
+            top_xs = np.array([peak_xs[0]])
+            top_ys = np.array([peak_ys[0]])
+            peak_info_text += f"📌 Only 1 peak: sum_energy = {top_xs[0]:.1f}, height = {top_ys[0]:.1f}, prom = {peak_proms[0]:.1f}\n"
         else:
             peak_info_text += "⚠ No peak found below sum_energy = 400.\n"
 
@@ -68,15 +68,16 @@ if uploaded_file is not None:
         ax.bar(filtered["sum_energy"], filtered["Counts"], width=1.0, color='steelblue', label="Original")
         ax.plot(x, y_smooth, color='orange', label="Smoothed", linewidth=1.5)
         ax.axvline(400, color="gray", linestyle="--", label="Threshold: 400")
-        if top_xs:
+        if len(top_xs) > 0:
             ax.scatter(top_xs, top_ys, color="red", s=100, edgecolors="black", label="Top Peaks")
         ax.set_xlabel("sum_energy (CH1 + CH2)")
         ax.set_ylabel("counts")
+        ax.set_title("1Dヒストグラムとトップ2ピーク")
         ax.legend()
         st.pyplot(fig)
 
         # テキスト出力
-        st.markdown("Detected peaks")
+        st.markdown("### 検出された代表ピーク")
         st.text(peak_info_text)
 
         # 画像保存とダウンロード
