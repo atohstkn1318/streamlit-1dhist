@@ -6,7 +6,7 @@ from scipy.signal import savgol_filter, find_peaks
 import io
 
 # タイトル
-st.title("1Dヒストグラムと代表ピーク検出（全範囲から上位4つ）")
+st.title("1Dヒストグラムと代表ピーク検出（上位4つ）")
 
 # ファイルアップロード
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください", type=["csv", "xlsx"])
@@ -69,10 +69,9 @@ if uploaded_file is not None:
         ax.bar(filtered["sum_energy"], filtered["Counts"], width=1.0, color='steelblue', label="Original")
         ax.plot(x, y_smooth, color='orange', label="Smoothed", linewidth=1.5)
         if len(top_xs) > 0:
-            ax.scatter(top_xs, top_ys, color="red", s=100, edgecolors="black", label="Top 4 Peaks")
+            ax.scatter(top_xs, top_ys, color="red", s=50, edgecolors="black", label="Top 4 Peaks")
         ax.set_xlabel("sum_energy (CH1 + CH2)")
         ax.set_ylabel("counts")
-        ax.set_title("1Dヒストグラムと上位4ピーク（プロミネンス × 高さ）")
         ax.legend()
         st.pyplot(fig)
 
