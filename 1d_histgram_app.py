@@ -6,7 +6,7 @@ from scipy.signal import savgol_filter, find_peaks
 import io
 
 # タイトル
-st.title("1Dヒストグラムと代表ピーク検出（sum_energy < 400）")
+st.title("1Dヒストグラムと代表ピーク検出（全範囲から上位4つ）")
 
 # ファイルアップロード
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください", type=["csv", "xlsx"])
@@ -37,47 +37,47 @@ if uploaded_file is not None:
         y = grouped["Counts"].values
         y_smooth = savgol_filter(y, window_length=21, polyorder=3)
 
-        # ピーク検出（緩く検出）
+        # ピーク検出（範囲指定なし）
         peaks, props = find_peaks(y_smooth, prominence=0)
-        valid = x[peaks] < 400
-        peak_xs = x[peaks][valid]
-        peak_ys = y_smooth[peaks][valid]
-        peak_proms = props["prominences"][valid]
+        peak_xs = x[peaks]
+        peak_ys = y_smooth[peaks]
+        peak_proms = props["prominences"]
 
         # スコア計算（height × prominence）
         scores = peak_ys * peak_proms
 
-        # 上位2つ選出
+        # 上位4つ選出
         top_xs, top_ys = np.array([]), np.array([])
         peak_info_text = ""
-        if len(scores) >= 2:
-            top_indices = np.argsort(scores)[-2:][::-1]
+        if len(scores) >= 4:
+            top_indices = np.argsort(scores)[-4:][::-1]
             top_xs = peak_xs[top_indices]
             top_ys = peak_ys[top_indices]
-            for i in range(2):
+            for i in range(4):
                 peak_info_text += f"📌 Peak {i+1}: sum_energy = {top_xs[i]:.1f}, height = {top_ys[i]:.1f}, prom = {peak_proms[top_indices[i]]:.1f}\n"
-        elif len(scores) == 1:
-            top_xs = np.array([peak_xs[0]])
-            top_ys = np.array([peak_ys[0]])
-            peak_info_text += f"📌 Only 1 peak: sum_energy = {top_xs[0]:.1f}, height = {top_ys[0]:.1f}, prom = {peak_proms[0]:.1f}\n"
+        elif len(scores) > 0:
+            top_indices = np.argsort(scores)[::-1]
+            top_xs = peak_xs[top_indices]
+            top_ys = peak_ys[top_indices]
+            for i in range(len(scores)):
+                peak_info_text += f"📌 Peak {i+1}: sum_energy = {top_xs[i]:.1f}, height = {top_ys[i]:.1f}, prom = {peak_proms[top_indices[i]]:.1f}\n"
         else:
-            peak_info_text += "⚠ No peak found below sum_energy = 400.\n"
+            peak_info_text += "⚠ No peak found in the entire range.\n"
 
         # 描画
         fig, ax = plt.subplots(figsize=(8, 4))
         ax.bar(filtered["sum_energy"], filtered["Counts"], width=1.0, color='steelblue', label="Original")
         ax.plot(x, y_smooth, color='orange', label="Smoothed", linewidth=1.5)
-        ax.axvline(400, color="gray", linestyle="--", label="Threshold: 400")
         if len(top_xs) > 0:
-            ax.scatter(top_xs, top_ys, color="red", s=100, edgecolors="black", label="Top Peaks")
+            ax.scatter(top_xs, top_ys, color="red", s=100, edgecolors="black", label="Top 4 Peaks")
         ax.set_xlabel("sum_energy (CH1 + CH2)")
         ax.set_ylabel("counts")
-        ax.set_title("1Dヒストグラムとトップ2ピーク")
+        ax.set_title("1Dヒストグラムと上位4ピーク（プロミネンス × 高さ）")
         ax.legend()
         st.pyplot(fig)
 
         # テキスト出力
-        st.markdown("### 検出された代表ピーク")
+        st.markdown("### 検出された代表ピーク（全体から上位4つ）")
         st.text(peak_info_text)
 
         # 画像保存とダウンロード
@@ -86,6 +86,6 @@ if uploaded_file is not None:
         st.download_button(
             label="この1Dヒストグラム画像を保存",
             data=buf.getvalue(),
-            file_name="1d_histogram_with_peaks.png",
+            file_name="1d_histogram_top4_peaks.png",
             mime="image/png"
         )
