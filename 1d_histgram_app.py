@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import io
 
 # タイトル
-st.title("1Dヒストグラム（エネルギー和 vs カウント）")
+st.title("1Dヒストグラム（エネルギー和・カウント）")
 
 # ファイルアップロード
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください", type=["csv", "xlsx"])
@@ -34,9 +34,8 @@ if uploaded_file is not None:
         # 描画
         fig, ax = plt.subplots(figsize=(8, 4))
         ax.bar(filtered["sum_energy"], filtered["Counts"], width=1.0, color='steelblue')
-        ax.set_xlabel("エネルギー和 (CH1 + CH2)")
-        ax.set_ylabel("カウント数")
-        ax.set_title("エネルギー和に対する1Dヒストグラム")
+        ax.set_xlabel("sum_energy (CH1 + CH2)")
+        ax.set_ylabel("counts")
         st.pyplot(fig)
 
         # 保存とダウンロード
