@@ -27,7 +27,7 @@ if uploaded_file is not None:
         # スライダー（表示範囲調整）
         x_min = int(grouped["sum_energy"].min())
         x_max = int(grouped["sum_energy"].max())
-        x_range = st.slider("表示するエネルギー和の範囲", x_min, x_max, (x_min, x_max))
+        x_range = st.slider("表示するエネルギー和の範囲", 0, x_max, (0, x_max))
 
         filtered = grouped[(grouped["sum_energy"] >= x_range[0]) & (grouped["sum_energy"] <= x_range[1])]
 
