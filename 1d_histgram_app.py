@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import io
 
 # タイトル
-st.title("1Dヒストグラム（エネルギー和・カウント）")
+st.title("1Dヒストグラム（エネルギー和,カウント数）")
 
 # ファイルアップロード
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください", type=["csv", "xlsx"])
