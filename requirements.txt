@@ -2,4 +2,5 @@ streamlit
 pandas
 numpy
 matplotlib
-openpyxl
+scipy
+openpyxl  # Excelファイル読み込みのため
