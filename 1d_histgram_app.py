@@ -54,13 +54,25 @@ if uploaded_file is not None:
             top_xs = peak_xs[top_indices]
             top_ys = peak_ys[top_indices]
             for i in range(4):
-                peak_info_text += f"Peak {i+1}: sum_energy = {top_xs[i]:.1f}, height = {top_ys[i]:.1f}, prom = {peak_proms[top_indices[i]]:.1f}\n"
+                idx = top_indices[i]
+                peak_info_text += (
+                    f"Peak {i+1}: sum_energy = {top_xs[i]:.1f}, "
+                    f"height = {top_ys[i]:.1f}, "
+                    f"prom = {peak_proms[idx]:.1f}, "
+                    f"score = {scores[idx]:.1f}\n"
+                )
         elif len(scores) > 0:
             top_indices = np.argsort(scores)[::-1]
             top_xs = peak_xs[top_indices]
             top_ys = peak_ys[top_indices]
             for i in range(len(scores)):
-                peak_info_text += f"Peak {i+1}: sum_energy = {top_xs[i]:.1f}, height = {top_ys[i]:.1f}, prom = {peak_proms[top_indices[i]]:.1f}\n"
+                idx = top_indices[i]
+                peak_info_text += (
+                    f"Peak {i+1}: sum_energy = {top_xs[i]:.1f}, "
+                    f"height = {top_ys[i]:.1f}, "
+                    f"prom = {peak_proms[idx]:.1f}, "
+                    f"score = {scores[idx]:.1f}\n"
+                )
         else:
             peak_info_text += "⚠ No peak found in the entire range.\n"
 
